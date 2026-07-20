@@ -5,37 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <title>Feliz 1 Mês, Meu Amor ❤️</title>
 
-<!-- Google Fonts: um serif elegante para títulos (Cormorant Garamond)
-     e um serif de leitura confortável para o corpo do texto (Lora) -->
+<!-- Playfair Display para títulos (traço de convite gravado) e
+     EB Garamond para o corpo, clima de carta escrita à mão -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style2.css">
 </head>
 <body>
 
-<!-- =========================================================
-     CAMADA DE FUNDO — fica atrás de tudo, sempre visível.
-     Aqui vivem: estrelas, corações flutuantes, pétalas de
-     cerejeira, vagalumes e a lua. Tudo gerado via JS (canvas
-     ou elementos DOM) para não pesar o HTML estático.
-========================================================= */ -->
-<canvas id="bg-canvas"></canvas>
-<div id="floating-hearts" class="layer" aria-hidden="true"></div>
-<div id="petals" class="layer" aria-hidden="true"></div>
+<!-- Fundo: papel com textura leve + vaga-lumes + pétalas prensadas caindo -->
+<div id="paper-bg"></div>
 <div id="fireflies" class="layer" aria-hidden="true"></div>
-<div class="moon" id="moon" aria-hidden="true"></div>
+<div id="petals" class="layer" aria-hidden="true"></div>
 
-<!-- Rastro de corações que segue o cursor -->
 <div id="cursor-trail" aria-hidden="true"></div>
 
-<!-- Áudio romântico de fundo. Troque o src por sua música preferida. -->
 <audio id="bg-music" loop preload="auto">
   <source src="musica.mp3" type="audio/mpeg">
 </audio>
-
-<!-- Sons sutis de transição entre capítulos -->
 <audio id="chime-sound" preload="auto">
   <source src="chime.mp3" type="audio/mpeg">
 </audio>
@@ -43,23 +32,28 @@
 <main id="app">
 
   <!-- ============================================
-       TELA 0 — ABERTURA
-       Tela escura, uma frase, depois um botão.
+       ABERTURA — um envelope lacrado com cera
   ============================================= -->
   <section id="screen-intro" class="screen active">
     <div class="intro-content">
       <p class="intro-line">❤️ Tenho uma surpresa para você...</p>
-      <button id="btn-open-heart" class="btn btn-primary hidden">
-        Abrir meu coração <span class="heart-beat">❤️</span>
+
+      <button id="btn-open-heart" class="envelope hidden" aria-label="Abrir envelope">
+        <span class="envelope-flap"></span>
+        <span class="envelope-body">
+          <span class="wax-seal">❤</span>
+        </span>
       </button>
+      <p class="envelope-hint hidden" id="envelope-hint">toque no selo para abrir</p>
     </div>
   </section>
 
   <!-- ============================================
-       TELA 1 — CAPÍTULO 1
+       CAPÍTULO 1
   ============================================= -->
   <section id="screen-ch1" class="screen chapter">
     <div class="chapter-inner">
+      <span class="eyebrow">um mês, um mundo</span>
       <h1 class="chapter-title glow-title">❤️ Feliz 1 mês, meu amor ❤️</h1>
       <p class="chapter-sub">Finalmente concluímos mais essa etapa.</p>
       <button class="btn btn-ghost next-chapter" data-next="screen-ch2">Continuar</button>
@@ -67,10 +61,11 @@
   </section>
 
   <!-- ============================================
-       TELA 2 — CAPÍTULO 2: LINHA DO TEMPO
+       CAPÍTULO 2 — TRILHA BOTÂNICA (linha do tempo)
   ============================================= -->
   <section id="screen-ch2" class="screen chapter">
     <div class="chapter-inner">
+      <span class="eyebrow">nossa trilha</span>
       <h2 class="chapter-title">Nossa história, em pequenos momentos</h2>
       <ul class="timeline" id="timeline">
         <li class="timeline-item" data-delay="0"><span class="tl-icon">❤️</span><span class="tl-text">O dia em que te vi pela primeira vez</span></li>
@@ -84,10 +79,11 @@
   </section>
 
   <!-- ============================================
-       TELA 3 — CAPÍTULO 3: CONTADOR EM TEMPO REAL
+       CAPÍTULO 3 — CONTADOR (relógio de bolso)
   ============================================= -->
   <section id="screen-ch3" class="screen chapter">
     <div class="chapter-inner">
+      <span class="eyebrow">desde 20 de junho</span>
       <h2 class="chapter-title">Estamos juntos há...</h2>
       <div class="counter" id="counter">
         <div class="counter-unit"><span class="counter-num" id="c-days">0</span><span class="counter-label">dias</span></div>
@@ -101,27 +97,28 @@
   </section>
 
   <!-- ============================================
-       TELA 4 — CAPÍTULO 4: CÉU ESTRELADO EM FORMA
-       DE CORAÇÃO
+       CAPÍTULO 4 — VAGA-LUMES FORMANDO UM CORAÇÃO
+       (em vez de estrelas — puxa para os olhos verdes dela)
   ============================================= -->
   <section id="screen-ch4" class="screen chapter">
     <div class="chapter-inner">
+      <span class="eyebrow">ao entardecer</span>
       <h2 class="chapter-title">Você é perfeita, do jeito que é.</h2>
-      <div class="stars-heart-wrap">
-        <svg id="stars-heart" viewBox="0 0 300 260" aria-hidden="true"></svg>
+      <div class="fireflies-heart-wrap">
+        <svg id="fireflies-heart" viewBox="0 0 300 260" aria-hidden="true"></svg>
       </div>
       <button class="btn btn-ghost next-chapter" data-next="screen-ch5">Continuar</button>
     </div>
   </section>
 
   <!-- ============================================
-       TELA 5 — CAPÍTULO 5: CORAÇÕES SE UNINDO
+       CAPÍTULO 5 — FLORES DESABROCHANDO EM CORAÇÃO
   ============================================= -->
   <section id="screen-ch5" class="screen chapter">
     <div class="chapter-inner">
+      <span class="eyebrow">o que você me trouxe</span>
       <h2 class="chapter-title">Você foi a melhor coisa que me aconteceu.</h2>
       <div class="merge-wrap" id="merge-wrap">
-        <!-- pequenos corações injetados via JS, que convergem para o centro -->
         <div class="merge-result" id="merge-result">❤️ Eu te amo ❤️</div>
       </div>
       <button class="btn btn-ghost next-chapter" data-next="screen-letter">Ler a carta</button>
@@ -129,12 +126,13 @@
   </section>
 
   <!-- ============================================
-       CARTA
+       CARTA — folha de papel amarrada com barbante
   ============================================= -->
   <section id="screen-letter" class="screen chapter letter-screen">
     <div class="chapter-inner letter-inner">
+      <span class="eyebrow">para você</span>
       <h2 class="chapter-title">A carta</h2>
-      <div class="letter-paper glass" id="letter-paper">
+      <div class="letter-paper" id="letter-paper">
         <p data-p>💖 Finalmente concluímos mais essa etapa, meu amor.</p>
         <p data-p>Nem parece que faz apenas um mês que estou ao seu lado. Para mim, parecem anos... uma vida inteira com você. ❤️</p>
         <p data-p>Ainda lembro da primeira vez que te vi. Você estava voltando da escola e não teve jeito: sua imagem ficou tatuada na minha mente. 💕</p>
@@ -192,9 +190,8 @@
 
 </main>
 
-<!-- Contêiner de confetes / fogos / explosão de corações -->
 <div id="celebration-layer" aria-hidden="true"></div>
 
-<script src="script.js"></script>
+<script src="script2.js"></script>
 </body>
 </html>
