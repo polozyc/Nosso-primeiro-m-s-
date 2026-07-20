@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Feliz 1 Mês, Meu Amor ❤️</title>
+
+<!-- Google Fonts: um serif elegante para títulos (Cormorant Garamond)
+     e um serif de leitura confortável para o corpo do texto (Lora) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* =====================================================================
+   TOKENS — paleta, tipografia e variáveis usadas no site inteiro.
+   Mude aqui para re-temar tudo de uma vez.
+===================================================================== */
+:root{
+  --wine-deep:   #200510;   /* fundo base, quase preto com fundo de vinho */
+  --wine:        #4a1027;
+  --wine-soft:   #712142;
+  --rose:        #e6a3b8;
+  --rose-soft:   #f4d3dd;
+  --red:         #c81e45;
+  --gold:        #d9b46a;
+  --gold-soft:   #f0dcae;
+  --cream:       #fbf3ec;
+
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body:    'Lora', serif;
+
+  --ease-soft: cubic-bezier(.22,.9,.32,1);
+  --dur-fade: 900ms;
+}
+
+*{ box-sizing:border-box; }
+html,body{
+  margin:0; padding:0; height:100%;
+  background:var(--wine-deep);
+  color:var(--cream);
+  font-family:var(--font-body);
+  overflow-x:hidden;
+  scroll-behavior:smooth;
+}
+::selection{ background:var(--red); color:var(--cream); }
+
+button{ font-family:inherit; }
+a{ color:inherit; }
+
+/* =====================================================================
+   CAMADAS DE FUNDO
+===================================================================== */
+#bg-canvas{
+  position:fixed; inset:0; width:100%; height:100%;
+  z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse at 20% 15%, rgba(200,30,69,.18), transparent 55%),
+    radial-gradient(ellipse at 80% 85%, rgba(217,180,106,.10), transparent 50%),
+    linear-gradient(180deg, #1a0410 0%, #2a0715 45%, #3a0f22 100%);
+}
+
+.layer{ position:fixed; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
+
+.moon{
+  position:fixed; top:6%; right:8%; width:70px; height:70px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, var(--gold-soft), var(--gold) 60%, transparent 75%);
+  box-shadow:0 0 60px 18px rgba(217,180,106,.35), 0 0 120px 40px rgba(217,180,106,.12);
+  z-index:1; opacity:.85; pointer-events:none;
+}
+
+/* corações flutuando lentamente no fundo */
+.floating-heart{
+  position:absolute; bottom:-10%;
+  font-size: var(--size, 18px);
+  opacity:.55;
+  animation: floatUp linear infinite;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 0 6px rgba(230,163,184,.5));
+}
+@keyframes floatUp{
+  0%   { transform:translateY(0) translateX(0) rotate(0deg); opacity:0; }
+  10%  { opacity:.6; }
+  90%  { opacity:.5; }
+  100% { transform:translateY(-115vh) translateX(var(--drift,20px)) rotate(25deg); opacity:0; }
+}
+
+/* pétalas de cerejeira misturadas aos corações */
+.petal{
+  position:absolute; top:-5%;
+  width:10px; height:10px; border-radius:50% 0 50% 50%;
+  background:linear-gradient(135deg, var(--rose-soft), var(--rose));
+  opacity:.7;
+  animation: petalFall linear infinite;
+}
+@keyframes petalFall{
+  0%   { transform:translateY(0) rotate(0deg); opacity:0; }
+  10%  { opacity:.8; }
+  100% { transform:translateY(110vh) translateX(var(--drift,-40px)) rotate(300deg); opacity:0; }
+}
+
+/* vagalumes discretos */
+.firefly{
+  position:absolute; width:4px; height:4px; border-radius:50%;
+  background:var(--gold-soft);
+  box-shadow:0 0 8px 3px rgba(240,220,174,.8);
+  animation: fireflyDrift 8s ease-in-out infinite, fireflyBlink 3s ease-in-out infinite;
+}
+@keyframes fireflyDrift{
+  0%,100%{ transform:translate(0,0); }
+  25%{ transform:translate(18px,-14px); }
+  50%{ transform:translate(-10px,10px); }
+  75%{ transform:translate(12px,16px); }
+}
+@keyframes fireflyBlink{
+  0%,100%{ opacity:.15; }
+  50%{ opacity:.9; }
+}
+
+/* rastro de corações do cursor */
+#cursor-trail{ position:fixed; inset:0; z-index:9998; pointer-events:none; }
+.trail-heart{
+  position:fixed; pointer-events:none; z-index:9998;
+  font-size:14px; color:var(--rose);
+  animation: trailFade 900ms ease-out forwards;
+}
+@keyframes trailFade{
+  0%{ transform:translate(-50%,-50%) scale(1); opacity:.9; }
+  100%{ transform:translate(-50%,-120%) scale(.4); opacity:0; }
+}
+
+/* =====================================================================
+   ESTRUTURA DE TELAS — cada "screen" é um capítulo em tela cheia.
+   Apenas a que tem .active fica visível; a troca é feita via JS
+   adicionando/removendo classes, o que dispara as transições abaixo.
+===================================================================== */
+#app{ position:relative; z-index:2; }
+
+.screen{
+  position:fixed; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  padding:6vh 6vw;
+  opacity:0; visibility:hidden;
+  transform:scale(1.04);
+  transition:opacity var(--dur-fade) var(--ease-soft), transform 1100ms var(--ease-soft), visibility 0s linear var(--dur-fade);
+  text-align:center;
+}
+.screen.active{
+  opacity:1; visibility:visible; transform:scale(1);
+  transition:opacity var(--dur-fade) var(--ease-soft), transform 1100ms var(--ease-soft);
+  position:relative;
+}
+.screen.leaving{
+  opacity:0; transform:scale(.97);
+}
+
+.chapter-inner{ max-width:640px; width:100%; }
+
+/* =====================================================================
+   TELA DE ABERTURA
+===================================================================== */
+#screen-intro{ background:transparent; }
+.intro-content{ display:flex; flex-direction:column; align-items:center; gap:2.6rem; }
+.intro-line{
+  font-family:var(--font-display);
+  font-size:clamp(1.4rem, 4vw, 2.2rem);
+  font-style:italic;
+  color:var(--rose-soft);
+  opacity:0;
+  animation: introReveal 2.4s var(--ease-soft) forwards;
+  text-shadow:0 0 24px rgba(230,163,184,.35);
+}
+@keyframes introReveal{
+  0%{ opacity:0; letter-spacing:.3em; filter:blur(6px); }
+  100%{ opacity:1; letter-spacing:normal; filter:blur(0); }
+}
+
+/* =====================================================================
+   BOTÕES
+===================================================================== */
+.btn{
+  border:none; cursor:pointer; border-radius:999px;
+  font-family:var(--font-display);
+  letter-spacing:.03em;
+  transition:transform 300ms var(--ease-soft), box-shadow 300ms var(--ease-soft), background 300ms;
+  position:relative; overflow:hidden;
+}
+.btn:hover{ transform:translateY(-2px) scale(1.03); }
+.btn:active{ transform:translateY(0) scale(.98); }
+.btn:focus-visible{ outline:2px solid var(--gold-soft); outline-offset:3px; }
+
+.btn-primary{
+  padding:.9rem 2.4rem; font-size:1.15rem;
+  background:linear-gradient(135deg, var(--red), #8f1433);
+  color:var(--cream);
+  box-shadow:0 8px 30px rgba(200,30,69,.45), inset 0 0 0 1px rgba(255,255,255,.08);
+}
+.btn-primary::after{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
+  transform:translateX(-120%);
+  animation: shine 3.2s ease-in-out infinite;
+}
+@keyframes shine{
+  0%,60%{ transform:translateX(-120%); }
+  100%{ transform:translateX(120%); }
+}
+
+.btn-ghost{
+  margin-top:2.8rem;
+  padding:.65rem 1.9rem; font-size:1rem;
+  background:rgba(255,255,255,.06);
+  color:var(--gold-soft);
+  border:1px solid rgba(217,180,106,.4);
+  backdrop-filter:blur(6px);
+}
+.btn-ghost:hover{ background:rgba(217,180,106,.14); }
+
+.btn-answer{
+  padding:.85rem 1.7rem; font-size:1.05rem; margin:.4rem;
+  background:rgba(255,255,255,.08);
+  color:var(--cream);
+  border:1px solid rgba(230,163,184,.5);
+  backdrop-filter:blur(6px);
+}
+.btn-answer:hover{ background:rgba(200,30,69,.35); }
+
+.hidden{ display:none !important; }
+
+.heart-beat{ display:inline-block; animation:heartbeat 1.2s ease-in-out infinite; }
+@keyframes heartbeat{
+  0%,100%{ transform:scale(1); }
+  25%{ transform:scale(1.18); }
+  40%{ transform:scale(1); }
+  55%{ transform:scale(1.14); }
+}
+
+/* =====================================================================
+   TÍTULOS DE CAPÍTULO
+===================================================================== */
+.chapter-title{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:clamp(1.7rem, 5vw, 2.7rem);
+  color:var(--cream);
+  margin:0 0 .6rem;
+  text-shadow:0 0 30px rgba(200,30,69,.25);
+}
+.glow-title{
+  animation: titleGlow 3.4s ease-in-out infinite;
+}
+@keyframes titleGlow{
+  0%,100%{ text-shadow:0 0 20px rgba(230,163,184,.25); }
+  50%{ text-shadow:0 0 42px rgba(230,163,184,.55), 0 0 80px rgba(200,30,69,.3); }
+}
+.chapter-sub{
+  font-style:italic; color:var(--rose-soft); font-size:1.15rem; margin-bottom:1rem;
+}
+
+/* palavras destacadas com brilho (amor, te amo, nome dela) */
+.word-glow{
+  color:var(--gold-soft);
+  text-shadow:0 0 12px rgba(217,180,106,.7);
+}
+
+/* =====================================================================
+   LINHA DO TEMPO — capítulo 2
+===================================================================== */
+.timeline{ list-style:none; padding:0; margin:2.2rem 0; display:flex; flex-direction:column; gap:1rem; }
+.timeline-item{
+  display:flex; align-items:center; gap:.9rem;
+  padding:.75rem 1.1rem; border-radius:16px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  opacity:.35; filter:grayscale(.6);
+  transform:translateX(-14px);
+  transition:opacity 700ms var(--ease-soft), filter 700ms var(--ease-soft), transform 700ms var(--ease-soft), box-shadow 700ms;
+}
+.timeline-item.lit{
+  opacity:1; filter:grayscale(0); transform:translateX(0);
+  box-shadow:0 0 24px rgba(200,30,69,.2), inset 0 0 0 1px rgba(217,180,106,.25);
+  background:rgba(255,255,255,.05);
+}
+.tl-icon{ font-size:1.3rem; }
+.tl-text{ font-size:1.05rem; text-align:left; }
+
+/* =====================================================================
+   CONTADOR — capítulo 3
+===================================================================== */
+.counter{ display:flex; gap:1.1rem; justify-content:center; flex-wrap:wrap; margin:2rem 0 1rem; }
+.counter-unit{
+  min-width:84px; padding:1rem .6rem; border-radius:18px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(217,180,106,.25);
+  backdrop-filter:blur(8px);
+}
+.counter-num{
+  display:block; font-family:var(--font-display); font-size:2.1rem; font-weight:600;
+  color:var(--gold-soft); text-shadow:0 0 18px rgba(217,180,106,.5);
+}
+.counter-label{ font-size:.8rem; letter-spacing:.12em; text-transform:uppercase; color:var(--rose-soft); }
+.counter-caption{ font-style:italic; color:var(--rose-soft); }
+
+/* =====================================================================
+   CÉU ESTRELADO EM FORMA DE CORAÇÃO — capítulo 4
+===================================================================== */
+.stars-heart-wrap{ display:flex; justify-content:center; margin:1.6rem 0; }
+#stars-heart{ width:min(320px, 80vw); height:auto; overflow:visible; }
+.heart-star{
+  fill:var(--gold-soft);
+  opacity:0;
+  transform-origin:center;
+  animation: starPop 900ms var(--ease-soft) forwards, starTwinkle 2.6s ease-in-out infinite;
+  animation-delay: var(--pop-delay, 0s), var(--pop-delay, 0s);
+  filter:drop-shadow(0 0 4px rgba(217,180,106,.9));
+}
+@keyframes starPop{
+  0%{ opacity:0; transform:scale(0); }
+  70%{ opacity:1; transform:scale(1.3); }
+  100%{ opacity:1; transform:scale(1); }
+}
+@keyframes starTwinkle{
+  0%,100%{ opacity:.7; }
+  50%{ opacity:1; }
+}
+
+/* =====================================================================
+   CORAÇÕES SE UNINDO — capítulo 5
+===================================================================== */
+.merge-wrap{
+  position:relative; height:260px; margin:1.6rem auto;
+  display:flex; align-items:center; justify-content:center;
+}
+.merge-piece{
+  position:absolute; font-size:1.6rem;
+  animation: mergeIn 1.4s var(--ease-soft) forwards;
+  animation-delay: var(--m-delay, 0s);
+  opacity:0;
+}
+@keyframes mergeIn{
+  0%{ opacity:0; transform:translate(var(--start-x), var(--start-y)) scale(.4) rotate(0deg); }
+  70%{ opacity:1; }
+  100%{ opacity:.9; transform:translate(0,0) scale(1) rotate(360deg); }
+}
+.merge-result{
+  position:relative; z-index:2;
+  font-family:var(--font-display); font-size:1.5rem; color:var(--gold-soft);
+  opacity:0; transform:scale(.6);
+  text-shadow:0 0 26px rgba(217,180,106,.7);
+  transition:opacity 900ms var(--ease-soft), transform 900ms var(--ease-soft);
+}
+.merge-result.show{ opacity:1; transform:scale(1); }
+
+/* =====================================================================
+   CARTA
+===================================================================== */
+.letter-screen{ align-items:flex-start; padding-top:8vh; padding-bottom:10vh; overflow-y:auto; }
+.letter-inner{ max-width:640px; }
+.glass{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(14px) saturate(120%);
+  -webkit-backdrop-filter:blur(14px) saturate(120%);
+}
+.letter-paper{
+  border-radius:22px; padding:2.4rem 2rem;
+  text-align:left; box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+.letter-paper p{
+  font-size:1.05rem; line-height:1.85; margin:0 0 1.3rem;
+  opacity:0; transform:translateY(14px);
+  transition:opacity 900ms var(--ease-soft), transform 900ms var(--ease-soft);
+}
+.letter-paper p.show{ opacity:1; transform:translateY(0); }
+.letter-paper p.verse{ font-style:italic; color:var(--gold-soft); border-top:1px solid rgba(217,180,106,.3); padding-top:1.2rem; }
+
+/* =====================================================================
+   PERGUNTA FINAL
+===================================================================== */
+.big-heart-pulse{
+  font-size:3.4rem; margin-bottom:1.2rem;
+  animation: heartbeat 1.6s ease-in-out infinite;
+  filter:drop-shadow(0 0 20px rgba(200,30,69,.5));
+}
+.question-lead{
+  font-family:var(--font-display); font-size:1.5rem; font-style:italic;
+  color:var(--rose-soft); margin-bottom:2rem;
+}
+.question-box{
+  margin-top:1.6rem; padding:2rem 1.6rem; border-radius:22px;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(14px);
+  animation: boxIn 700ms var(--ease-soft);
+}
+@keyframes boxIn{
+  0%{ opacity:0; transform:translateY(16px) scale(.96); }
+  100%{ opacity:1; transform:translateY(0) scale(1); }
+}
+.question-text{ font-size:1.2rem; margin-bottom:1.2rem; }
+.question-options{ display:flex; flex-wrap:wrap; justify-content:center; }
+.answer-response{
+  margin-top:1.6rem; font-family:var(--font-display); font-size:1.4rem;
+  color:var(--gold-soft); text-shadow:0 0 20px rgba(217,180,106,.6);
+}
+
+/* leve tremor para "Claro que eu te amo" */
+.shake{ animation: shake 500ms ease-in-out; }
+@keyframes shake{
+  0%,100%{ transform:translateX(0); }
+  20%{ transform:translateX(-8px); }
+  40%{ transform:translateX(7px); }
+  60%{ transform:translateX(-5px); }
+  80%{ transform:translateX(4px); }
+}
+
+/* =====================================================================
+   FINAL ESPECIAL
+===================================================================== */
+.final-screen{ background:radial-gradient(ellipse at center, rgba(200,30,69,.12), transparent 70%); }
+.final-heart{
+  font-size:3rem; margin-bottom:1.4rem;
+  animation: heartbeat 1.8s ease-in-out infinite;
+}
+.final-text{
+  font-family:var(--font-display); font-size:clamp(1.15rem,3vw,1.5rem);
+  line-height:1.9; color:var(--cream);
+}
+.final-signature{
+  margin-top:2.4rem; font-family:var(--font-display); font-size:1.6rem; font-style:italic;
+  color:var(--gold-soft); text-shadow:0 0 26px rgba(217,180,106,.6);
+}
+
+/* =====================================================================
+   CELEBRAÇÃO — confetes, fogos discretos, explosão de corações
+===================================================================== */
+#celebration-layer{ position:fixed; inset:0; z-index:9999; pointer-events:none; overflow:hidden; }
+.confetti{
+  position:absolute; top:-5%; width:8px; height:14px; opacity:.9;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall{
+  0%{ transform:translateY(0) rotate(0deg); opacity:1; }
+  100%{ transform:translateY(110vh) rotate(540deg); opacity:0; }
+}
+.burst-heart{
+  position:absolute; font-size:1.4rem;
+  animation: burstOut 1.3s var(--ease-soft) forwards;
+}
+@keyframes burstOut{
+  0%{ transform:translate(0,0) scale(.4); opacity:1; }
+  100%{ transform:translate(var(--bx), var(--by)) scale(1.1); opacity:0; }
+}
+.spark{
+  position:absolute; width:4px; height:4px; border-radius:50%;
+  background:var(--gold-soft); box-shadow:0 0 10px 3px rgba(240,220,174,.9);
+  animation: sparkOut 900ms ease-out forwards;
+}
+@keyframes sparkOut{
+  0%{ transform:translate(0,0); opacity:1; }
+  100%{ transform:translate(var(--sx), var(--sy)); opacity:0; }
+}
+
+/* =====================================================================
+   RESPONSIVO
+===================================================================== */
+@media (max-width:560px){
+  .chapter-title{ font-size:clamp(1.4rem,6vw,2rem); }
+  .counter-unit{ min-width:70px; padding:.8rem .4rem; }
+  .counter-num{ font-size:1.6rem; }
+  .letter-paper{ padding:1.6rem 1.2rem; }
+  .moon{ width:46px; height:46px; top:4%; right:6%; }
+}
+
+/* =====================================================================
+   RESPEITA "REDUZIR MOVIMENTO" DO SISTEMA
+===================================================================== */
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     CAMADA DE FUNDO — fica atrás de tudo, sempre visível.
+     Aqui vivem: estrelas, corações flutuantes, pétalas de
+     cerejeira, vagalumes e a lua. Tudo gerado via JS (canvas
+     ou elementos DOM) para não pesar o HTML estático.
+========================================================= */ -->
+<canvas id="bg-canvas"></canvas>
+<div id="floating-hearts" class="layer" aria-hidden="true"></div>
+<div id="petals" class="layer" aria-hidden="true"></div>
+<div id="fireflies" class="layer" aria-hidden="true"></div>
+<div class="moon" id="moon" aria-hidden="true"></div>
+
+<!-- Rastro de corações que segue o cursor -->
+<div id="cursor-trail" aria-hidden="true"></div>
+
+<!-- Áudio romântico de fundo. Troque o src por sua música preferida. -->
+<audio id="bg-music" loop preload="auto">
+  <source src="musica.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Sons sutis de transição entre capítulos -->
+<audio id="chime-sound" preload="auto">
+  <source src="chime.mp3" type="audio/mpeg">
+</audio>
+
+<main id="app">
+
+  <!-- ============================================
+       TELA 0 — ABERTURA
+       Tela escura, uma frase, depois um botão.
+  ============================================= -->
+  <section id="screen-intro" class="screen active">
+    <div class="intro-content">
+      <p class="intro-line">❤️ Tenho uma surpresa para você...</p>
+      <button id="btn-open-heart" class="btn btn-primary hidden">
+        Abrir meu coração <span class="heart-beat">❤️</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       TELA 1 — CAPÍTULO 1
+  ============================================= -->
+  <section id="screen-ch1" class="screen chapter">
+    <div class="chapter-inner">
+      <h1 class="chapter-title glow-title">❤️ Feliz 1 mês, meu amor ❤️</h1>
+      <p class="chapter-sub">Finalmente concluímos mais essa etapa.</p>
+      <button class="btn btn-ghost next-chapter" data-next="screen-ch2">Continuar</button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       TELA 2 — CAPÍTULO 2: LINHA DO TEMPO
+  ============================================= -->
+  <section id="screen-ch2" class="screen chapter">
+    <div class="chapter-inner">
+      <h2 class="chapter-title">Nossa história, em pequenos momentos</h2>
+      <ul class="timeline" id="timeline">
+        <li class="timeline-item" data-delay="0"><span class="tl-icon">❤️</span><span class="tl-text">O dia em que te vi pela primeira vez</span></li>
+        <li class="timeline-item" data-delay="1"><span class="tl-icon">💚</span><span class="tl-text">Seus olhos verdes</span></li>
+        <li class="timeline-item" data-delay="2"><span class="tl-icon">🎙️</span><span class="tl-text">Sua voz</span></li>
+        <li class="timeline-item" data-delay="3"><span class="tl-icon">💋</span><span class="tl-text">Nosso primeiro beijo</span></li>
+        <li class="timeline-item" data-delay="4"><span class="tl-icon">❤️</span><span class="tl-text">Nosso primeiro mês</span></li>
+      </ul>
+      <button class="btn btn-ghost next-chapter" data-next="screen-ch3">Continuar</button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       TELA 3 — CAPÍTULO 3: CONTADOR EM TEMPO REAL
+  ============================================= -->
+  <section id="screen-ch3" class="screen chapter">
+    <div class="chapter-inner">
+      <h2 class="chapter-title">Estamos juntos há...</h2>
+      <div class="counter" id="counter">
+        <div class="counter-unit"><span class="counter-num" id="c-days">0</span><span class="counter-label">dias</span></div>
+        <div class="counter-unit"><span class="counter-num" id="c-hours">0</span><span class="counter-label">horas</span></div>
+        <div class="counter-unit"><span class="counter-num" id="c-mins">0</span><span class="counter-label">min</span></div>
+        <div class="counter-unit"><span class="counter-num" id="c-secs">0</span><span class="counter-label">seg</span></div>
+      </div>
+      <p class="counter-caption">e cada segundo valeu a pena.</p>
+      <button class="btn btn-ghost next-chapter" data-next="screen-ch4">Continuar</button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       TELA 4 — CAPÍTULO 4: CÉU ESTRELADO EM FORMA
+       DE CORAÇÃO
+  ============================================= -->
+  <section id="screen-ch4" class="screen chapter">
+    <div class="chapter-inner">
+      <h2 class="chapter-title">Você é perfeita, do jeito que é.</h2>
+      <div class="stars-heart-wrap">
+        <svg id="stars-heart" viewBox="0 0 300 260" aria-hidden="true"></svg>
+      </div>
+      <button class="btn btn-ghost next-chapter" data-next="screen-ch5">Continuar</button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       TELA 5 — CAPÍTULO 5: CORAÇÕES SE UNINDO
+  ============================================= -->
+  <section id="screen-ch5" class="screen chapter">
+    <div class="chapter-inner">
+      <h2 class="chapter-title">Você foi a melhor coisa que me aconteceu.</h2>
+      <div class="merge-wrap" id="merge-wrap">
+        <!-- pequenos corações injetados via JS, que convergem para o centro -->
+        <div class="merge-result" id="merge-result">❤️ Eu te amo ❤️</div>
+      </div>
+      <button class="btn btn-ghost next-chapter" data-next="screen-letter">Ler a carta</button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CARTA
+  ============================================= -->
+  <section id="screen-letter" class="screen chapter letter-screen">
+    <div class="chapter-inner letter-inner">
+      <h2 class="chapter-title">A carta</h2>
+      <div class="letter-paper glass" id="letter-paper">
+        <p data-p>💖 Finalmente concluímos mais essa etapa, meu amor.</p>
+        <p data-p>Nem parece que faz apenas um mês que estou ao seu lado. Para mim, parecem anos... uma vida inteira com você. ❤️</p>
+        <p data-p>Ainda lembro da primeira vez que te vi. Você estava voltando da escola e não teve jeito: sua imagem ficou tatuada na minha mente. 💕</p>
+        <p data-p>Ainda lembro da sensação de te ver na rua e sentir uma vontade enorme de falar com você. Lembro de olhar pela janela e me deparar com dois pontinhos verdes brilhando... seus olhos. 💚✨</p>
+        <p data-p>A primeira vez que ouvi sua voz foi um sentimento estranho, porque eu simplesmente não queria mais parar de ouvi-la. Nosso primeiro beijo, todo tímido e cheio de nervosismo... e, aos poucos, fomos nos soltando, até que tudo passou a parecer a coisa mais natural do mundo. ❤️</p>
+        <p data-p>Quero que você saiba que eu não sou apenas seu namorado. Eu sou seu melhor amigo, seu porto seguro, seu ouvinte e o seu maior fã. 💖</p>
+        <p data-p>Eu te admiro em todos os aspectos da sua vida. Me orgulho de cada conquista sua, comemoro cada vitória como se fosse minha e sempre estarei aqui para te apoiar, em qualquer situação. ❤️</p>
+        <p data-p>Sei que sou chato na maior parte do tempo, ou que às vezes pareço distante e ausente. Mas eu juro que não é por mal. No fundo, é medo de te perder... porque, se eu te perder, eu me perco junto. Já desaprendi a viver sem você. 🥹❤️</p>
+        <p data-p>Prometo que estou dando o meu máximo para ser menos chato, menos inseguro, mais paciente e parar de tirar conclusões antes da hora. Porque eu quero que seja você. Sempre você. 💞</p>
+        <p data-p>Você é perfeita da cabeça aos pés. Seu corpo é uma obra de arte que nem Van Gogh conseguiria reproduzir. Sua voz se tornou a minha música favorita, e os seus olhos são a paisagem onde eu quero descansar pelo resto da minha vida. ❤️🎨</p>
+        <p data-p>Eu te amo muito e espero viver muitos anos ao seu lado... uma vida inteira. Você foi a melhor coisa que me aconteceu, e agradeço a Deus todos os dias por ter unido os nossos caminhos. 🙏❤️</p>
+        <p data-p>E só para deixar bem claro...<br>Eu não vou te deixar ir embora.<br>Sim, isso é uma ameaça. 😌❤️</p>
+        <p data-p class="verse">📖❤️<br>"Sobretudo, amem-se sinceramente uns aos outros, porque o amor perdoa muitíssimos pecados."<br><em>1 Pedro 4:8</em></p>
+      </div>
+      <button class="btn btn-primary hidden" id="btn-after-letter" data-next="screen-question">Continuar</button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       PERGUNTA FINAL
+  ============================================= -->
+  <section id="screen-question" class="screen chapter">
+    <div class="chapter-inner">
+      <div class="big-heart-pulse">❤️</div>
+      <p class="question-lead">Eu tenho apenas uma pergunta...</p>
+      <button id="btn-show-question" class="btn btn-primary hidden">Responder ❤️</button>
+
+      <div id="question-box" class="question-box hidden">
+        <p class="question-text">Você aceita continuar essa história comigo?</p>
+        <div class="question-options">
+          <button class="btn btn-answer" data-answer="1">Eu também te amo ❤️</button>
+          <button class="btn btn-answer" data-answer="2">Claro que eu te amo ❤️</button>
+        </div>
+      </div>
+
+      <p id="answer-response" class="answer-response hidden"></p>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FINAL ESPECIAL
+  ============================================= -->
+  <section id="screen-final" class="screen chapter final-screen">
+    <div class="chapter-inner">
+      <div class="final-heart">❤️</div>
+      <p class="final-text">
+        Obrigado por existir.<br><br>
+        Obrigado por escolher caminhar ao meu lado.<br><br>
+        Esse foi apenas nosso primeiro mês...<br><br>
+        Mal posso esperar para viver uma vida inteira com você.
+      </p>
+      <p class="final-signature">❤️ Para sempre nós. ❤️</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- Contêiner de confetes / fogos / explosão de corações -->
+<div id="celebration-layer" aria-hidden="true"></div>
+
+<script>
+/* =====================================================================
+   CONFIGURAÇÃO — edite aqui sem precisar mexer no resto do código.
+===================================================================== */
+const CONFIG = {
+  // Nome dela, usado para o brilho especial em "amor / te amo / [nome]"
+  // Troque "meu amor" pelo nome dela para o efeito de brilho aparecer no nome.
+  partnerName: "meu amor",
+
+  // Data e hora de início do namoro (usada no contador ao vivo)
+  // formato: ano, mês (0 = janeiro!), dia, hora, minuto
+  startDate: new Date(2026, 5, 20, 0, 0, 0), // 20/06/2026
+
+  // Quantidade de elementos de fundo (reduza em aparelhos mais fracos)
+  heartCount: 22,
+  petalCount: 16,
+  fireflyCount: 10,
+};
+
+/* =====================================================================
+   UTILITÁRIOS
+===================================================================== */
+const $  = (sel, ctx = document) => ctx.querySelector(sel);
+const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+const rand = (min, max) => Math.random() * (max - min) + min;
+
+/* =====================================================================
+   NAVEGAÇÃO ENTRE TELAS (CAPÍTULOS)
+   Cada troca dispara: som de transição + fade/zoom via CSS
+   (classes .active / .leaving definidas em style.css).
+===================================================================== */
+function goToScreen(targetId) {
+  const current = $(".screen.active");
+  const target = document.getElementById(targetId);
+  if (!target || current === target) return;
+
+  playChime();
+
+  if (current) {
+    current.classList.add("leaving");
+    current.classList.remove("active");
+  }
+
+  // pequeno atraso para a transição de saída começar antes da entrada
+  setTimeout(() => {
+    if (current) current.classList.remove("leaving");
+    target.classList.add("active");
+    onScreenEnter(targetId);
+    // leva o usuário para o topo do novo capítulo
+    target.scrollTop = 0;
+  }, 120);
+
+  // explosão suave de partículas a cada transição de capítulo
+  burstAmbientHearts(10);
+}
+
+// Ações específicas de cada capítulo, disparadas quando ele entra em cena
+function onScreenEnter(id) {
+  if (id === "screen-ch2") animateTimeline();
+  if (id === "screen-ch3") startCounter();
+  if (id === "screen-ch4") buildStarsHeart();
+  if (id === "screen-ch5") buildMergeHearts();
+  if (id === "screen-letter") revealLetter();
+}
+
+// Liga todos os botões "Continuar" de capítulo em capítulo
+$$(".next-chapter").forEach((btn) => {
+  btn.addEventListener("click", () => goToScreen(btn.dataset.next));
+});
+
+/* =====================================================================
+   ABERTURA — frase, depois botão, depois abre o coração
+===================================================================== */
+const introBtn = $("#btn-open-heart");
+
+// o botão só aparece depois da frase terminar de se revelar
+setTimeout(() => introBtn.classList.remove("hidden"), 2600);
+
+introBtn.addEventListener("click", () => {
+  startMusic();
+  // efeito cinematográfico: leve zoom + explosão de corações e brilho
+  burstAmbientHearts(24);
+  goToScreen("screen-ch1");
+}, { once: true });
+
+/* =====================================================================
+   ÁUDIO — a música só começa após interação do usuário (política dos
+   navegadores) e falha silenciosamente se o arquivo não existir.
+===================================================================== */
+function startMusic() {
+  const music = $("#bg-music");
+  music.volume = 0.35;
+  music.play().catch(() => { /* arquivo de música ainda não adicionado — tudo bem */ });
+}
+function playChime() {
+  const chime = $("#chime-sound");
+  chime.volume = 0.25;
+  chime.currentTime = 0;
+  chime.play().catch(() => { /* som opcional — segue sem ele */ });
+}
+
+/* =====================================================================
+   CAPÍTULO 2 — LINHA DO TEMPO
+   Os itens "acendem" um a um, como se a memória fosse se formando.
+===================================================================== */
+function animateTimeline() {
+  const items = $$(".timeline-item", $("#screen-ch2"));
+  items.forEach((item) => item.classList.remove("lit")); // permite reassistir
+  items.forEach((item) => {
+    const delay = Number(item.dataset.delay) * 450 + 300;
+    setTimeout(() => item.classList.add("lit"), delay);
+  });
+}
+
+/* =====================================================================
+   CAPÍTULO 3 — CONTADOR "ESTAMOS JUNTOS HÁ..."
+===================================================================== */
+let counterTimer = null;
+function startCounter() {
+  clearInterval(counterTimer);
+  updateCounter();
+  counterTimer = setInterval(updateCounter, 1000);
+}
+function updateCounter() {
+  const now = new Date();
+  let diff = Math.max(0, now - CONFIG.startDate) / 1000; // segundos
+
+  const days = Math.floor(diff / 86400); diff -= days * 86400;
+  const hours = Math.floor(diff / 3600); diff -= hours * 3600;
+  const mins = Math.floor(diff / 60); diff -= mins * 60;
+  const secs = Math.floor(diff);
+
+  $("#c-days").textContent = days;
+  $("#c-hours").textContent = String(hours).padStart(2, "0");
+  $("#c-mins").textContent = String(mins).padStart(2, "0");
+  $("#c-secs").textContent = String(secs).padStart(2, "0");
+}
+
+/* =====================================================================
+   CAPÍTULO 4 — ESTRELAS FORMANDO UM CORAÇÃO
+   Usa a equação paramétrica clássica do coração para posicionar
+   estrelas ao longo do contorno (e algumas espalhadas por dentro).
+===================================================================== */
+let starsBuilt = false;
+function buildStarsHeart() {
+  if (starsBuilt) return; // constrói só uma vez, a animação de entrada é o suficiente
+  starsBuilt = true;
+
+  const svg = $("#stars-heart");
+  const cx = 150, cy = 130, scale = 8;
+  const points = [];
+
+  // contorno do coração
+  const steps = 46;
+  for (let i = 0; i < steps; i++) {
+    const t = (i / steps) * Math.PI * 2;
+    const x = 16 * Math.pow(Math.sin(t), 3);
+    const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+    points.push({ x: cx + x * scale, y: cy - y * scale });
+  }
+  // algumas estrelas soltas por dentro, para dar profundidade de céu
+  for (let i = 0; i < 16; i++) {
+    const t = rand(0, Math.PI * 2);
+    const r = rand(0.15, 0.65);
+    const x = 16 * Math.pow(Math.sin(t), 3) * r;
+    const y = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * r;
+    points.push({ x: cx + x * scale, y: cy - y * scale });
+  }
+
+  // embaralha para que o "acender" não siga só o contorno em ordem
+  points.sort(() => Math.random() - 0.5);
+
+  points.forEach((p, i) => {
+    const size = rand(1.6, 3.4);
+    const star = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    star.setAttribute("cx", p.x.toFixed(2));
+    star.setAttribute("cy", p.y.toFixed(2));
+    star.setAttribute("r", size.toFixed(2));
+    star.classList.add("heart-star");
+    star.style.setProperty("--pop-delay", `${(i * 45) / 1000}s`);
+    svg.appendChild(star);
+  });
+}
+
+/* =====================================================================
+   CAPÍTULO 5 — PEQUENOS CORAÇÕES SE UNEM EM UM GRANDE CORAÇÃO
+===================================================================== */
+let mergeBuilt = false;
+function buildMergeHearts() {
+  if (mergeBuilt) return;
+  mergeBuilt = true;
+
+  const wrap = $("#merge-wrap");
+  const result = $("#merge-result");
+  const total = 14;
+
+  for (let i = 0; i < total; i++) {
+    const piece = document.createElement("span");
+    piece.className = "merge-piece";
+    piece.textContent = "❤️";
+    const angle = (i / total) * Math.PI * 2;
+    const radius = rand(110, 150);
+    piece.style.setProperty("--start-x", `${Math.cos(angle) * radius}px`);
+    piece.style.setProperty("--start-y", `${Math.sin(angle) * radius}px`);
+    piece.style.setProperty("--m-delay", `${i * 70}ms`);
+    wrap.insertBefore(piece, result);
+  }
+
+  setTimeout(() => result.classList.add("show"), total * 70 + 700);
+}
+
+/* =====================================================================
+   CARTA — revela parágrafo a parágrafo, com destaque de brilho em
+   "amor", "te amo" e no nome dela.
+===================================================================== */
+let letterRevealed = false;
+function revealLetter() {
+  if (letterRevealed) return;
+  letterRevealed = true;
+
+  const paragraphs = $$("#letter-paper p");
+
+  // aplica o brilho nas palavras-chave antes de revelar
+  paragraphs.forEach((p) => highlightWords(p));
+
+  paragraphs.forEach((p, i) => {
+    setTimeout(() => p.classList.add("show"), i * 650 + 300);
+  });
+
+  const totalTime = paragraphs.length * 650 + 1200;
+  setTimeout(() => {
+    $("#btn-after-letter").classList.remove("hidden");
+  }, totalTime);
+}
+
+function highlightWords(p) {
+  const targets = ["te amo", "amor", CONFIG.partnerName].filter(Boolean);
+  let html = p.innerHTML;
+  targets.forEach((word) => {
+    if (!word) return;
+    const safe = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`(${safe})`, "gi");
+    html = html.replace(re, '<span class="word-glow">$1</span>');
+  });
+  p.innerHTML = html;
+}
+
+/* =====================================================================
+   PERGUNTA FINAL
+===================================================================== */
+setTimeout(() => {
+  const btn = $("#btn-show-question");
+  if (btn) btn.classList.remove("hidden");
+}, 2200);
+
+// esse listener é religado sempre que a tela é revisitada, então usamos
+// delegação simples no clique do botão "Responder"
+$("#btn-show-question")?.addEventListener("click", () => {
+  $("#btn-show-question").classList.add("hidden");
+  $("#question-box").classList.remove("hidden");
+});
+
+$$(".btn-answer").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const isPlayful = btn.dataset.answer === "2";
+    const responseEl = $("#answer-response");
+
+    if (isPlayful) {
+      // pequeno tremor de brincadeira antes da resposta "certa"
+      $("#question-box").classList.add("shake");
+      setTimeout(() => $("#question-box").classList.remove("shake"), 500);
+      setTimeout(() => {
+        responseEl.textContent = "Resposta correta 😌❤️";
+        finishAnswer(responseEl);
+      }, 500);
+    } else {
+      responseEl.textContent = "Você é a melhor escolha da minha vida.";
+      finishAnswer(responseEl);
+    }
+  });
+});
+
+function finishAnswer(responseEl) {
+  $("#question-box").classList.add("hidden");
+  responseEl.classList.remove("hidden");
+  celebrate();
+  setTimeout(() => goToScreen("screen-final"), 3200);
+}
+
+/* =====================================================================
+   CELEBRAÇÃO — explosão de corações, confetes e fogos discretos
+===================================================================== */
+function celebrate() {
+  const layer = $("#celebration-layer");
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight / 2;
+
+  // explosão de corações
+  for (let i = 0; i < 26; i++) {
+    const h = document.createElement("div");
+    h.className = "burst-heart";
+    h.textContent = ["❤️", "💖", "💕", "💗"][Math.floor(rand(0, 4))];
+    h.style.left = cx + "px";
+    h.style.top = cy + "px";
+    const angle = rand(0, Math.PI * 2);
+    const dist = rand(120, 340);
+    h.style.setProperty("--bx", `${Math.cos(angle) * dist}px`);
+    h.style.setProperty("--by", `${Math.sin(angle) * dist}px`);
+    h.style.animationDelay = `${rand(0, 200)}ms`;
+    layer.appendChild(h);
+    setTimeout(() => h.remove(), 1700);
+  }
+
+  // confetes caindo
+  const colors = ["#c81e45", "#d9b46a", "#e6a3b8", "#fbf3ec"];
+  for (let i = 0; i < 36; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.style.left = rand(0, 100) + "vw";
+    c.style.background = colors[Math.floor(rand(0, colors.length))];
+    c.style.animationDuration = rand(2.4, 4) + "s";
+    c.style.animationDelay = rand(0, 500) + "ms";
+    layer.appendChild(c);
+    setTimeout(() => c.remove(), 4600);
+  }
+
+  // fogos discretos: pequenas fagulhas douradas em 3 pontos da tela
+  [0.25, 0.5, 0.75].forEach((xf, idx) => {
+    setTimeout(() => sparkBurst(window.innerWidth * xf, window.innerHeight * rand(0.25, 0.45)), idx * 260);
+  });
+}
+
+function sparkBurst(x, y) {
+  const layer = $("#celebration-layer");
+  for (let i = 0; i < 18; i++) {
+    const s = document.createElement("div");
+    s.className = "spark";
+    s.style.left = x + "px";
+    s.style.top = y + "px";
+    const angle = rand(0, Math.PI * 2);
+    const dist = rand(40, 110);
+    s.style.setProperty("--sx", `${Math.cos(angle) * dist}px`);
+    s.style.setProperty("--sy", `${Math.sin(angle) * dist}px`);
+    layer.appendChild(s);
+    setTimeout(() => s.remove(), 1000);
+  }
+}
+
+/* pequena explosão ambiente de corações usada nas trocas de capítulo */
+function burstAmbientHearts(count) {
+  const layer = $("#celebration-layer");
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight * 0.4;
+  for (let i = 0; i < count; i++) {
+    const h = document.createElement("div");
+    h.className = "burst-heart";
+    h.textContent = "❤️";
+    h.style.fontSize = rand(10, 18) + "px";
+    h.style.left = cx + rand(-60, 60) + "px";
+    h.style.top = cy + rand(-30, 30) + "px";
+    const angle = rand(0, Math.PI * 2);
+    const dist = rand(60, 160);
+    h.style.setProperty("--bx", `${Math.cos(angle) * dist}px`);
+    h.style.setProperty("--by", `${Math.sin(angle) * dist}px`);
+    layer.appendChild(h);
+    setTimeout(() => h.remove(), 1500);
+  }
+}
+
+/* =====================================================================
+   FUNDO AMBIENTE — corações flutuando, pétalas de cerejeira e vagalumes
+   gerados continuamente com posições/tempos aleatórios.
+===================================================================== */
+function spawnFloatingHeart() {
+  const el = document.createElement("span");
+  el.className = "floating-heart";
+  el.textContent = ["❤️", "💕", "💗", "💖"][Math.floor(rand(0, 4))];
+  el.style.left = rand(0, 100) + "vw";
+  el.style.setProperty("--size", rand(12, 26) + "px");
+  el.style.setProperty("--drift", rand(-60, 60) + "px");
+  el.style.animationDuration = rand(9, 18) + "s";
+  $("#floating-hearts").appendChild(el);
+  setTimeout(() => el.remove(), 19000);
+}
+
+function spawnPetal() {
+  const el = document.createElement("span");
+  el.className = "petal";
+  el.style.left = rand(0, 100) + "vw";
+  el.style.setProperty("--drift", rand(-80, 80) + "px");
+  el.style.animationDuration = rand(8, 15) + "s";
+  const size = rand(6, 12);
+  el.style.width = size + "px";
+  el.style.height = size + "px";
+  $("#petals").appendChild(el);
+  setTimeout(() => el.remove(), 16000);
+}
+
+function spawnFirefly() {
+  const el = document.createElement("span");
+  el.className = "firefly";
+  el.style.left = rand(0, 100) + "vw";
+  el.style.top = rand(10, 90) + "vh";
+  el.style.animationDelay = rand(0, 3) + "s, " + rand(0, 3) + "s";
+  $("#fireflies").appendChild(el);
+  setTimeout(() => el.remove(), 12000);
+}
+
+// popula o fundo continuamente em intervalos escalonados
+setInterval(spawnFloatingHeart, 900);
+setInterval(spawnPetal, 1100);
+setInterval(spawnFirefly, 1800);
+for (let i = 0; i < 8; i++) setTimeout(spawnFloatingHeart, i * 200);
+for (let i = 0; i < 6; i++) setTimeout(spawnPetal, i * 250);
+for (let i = 0; i < CONFIG.fireflyCount; i++) setTimeout(spawnFirefly, i * 300);
+
+/* =====================================================================
+   CANVAS DE ESTRELAS DE FUNDO — leve cintilar contínuo
+===================================================================== */
+(function starsBackground() {
+  const canvas = $("#bg-canvas");
+  const ctx = canvas.getContext("2d");
+  let stars = [];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const count = Math.floor((canvas.width * canvas.height) / 9000);
+    stars = Array.from({ length: count }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: rand(0.4, 1.6),
+      speed: rand(0.01, 0.03),
+      phase: rand(0, Math.PI * 2),
+    }));
+  }
+
+  function draw(time) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // reaplica o degradê de fundo (o CSS já cobre o base, então aqui só as estrelas)
+    stars.forEach((s) => {
+      const twinkle = 0.5 + 0.5 * Math.sin(time * s.speed + s.phase);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(251,243,236,${0.15 + twinkle * 0.55})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener("resize", resize);
+  resize();
+  requestAnimationFrame(draw);
+})();
+
+/* =====================================================================
+   RASTRO DE CORAÇÕES NO CURSOR
+===================================================================== */
+(function cursorTrail() {
+  let lastSpawn = 0;
+  const isTouch = window.matchMedia("(pointer: coarse)").matches;
+  if (isTouch) return; // evita ruído visual em telas de toque
+
+  document.addEventListener("mousemove", (e) => {
+    const now = Date.now();
+    if (now - lastSpawn < 60) return; // limita a frequência
+    lastSpawn = now;
+
+    const heart = document.createElement("span");
+    heart.className = "trail-heart";
+    heart.textContent = "❤";
+    heart.style.left = e.clientX + "px";
+    heart.style.top = e.clientY + "px";
+    $("#cursor-trail").appendChild(heart);
+    setTimeout(() => heart.remove(), 900);
+  });
+})();
+
+</script>
+</body>
+</html>
